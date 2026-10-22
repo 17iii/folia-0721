@@ -9,7 +9,7 @@
 装上去不会觉得"这是另一个软件"，只会觉得歌词更好看了。
 
 - 安装包：[Releases](../../releases) → `Folia-Setup-0.7.21.exe`（Windows x64）
-- 上游的完整说明文档保留在 [README.upstream.md](README.upstream.md)
+- 上游的完整说明文档保留在 [README.upstream.md](README.upstream.md)（英文版 [README.upstream.en.md](README.upstream.en.md)）
 
 ---
 
