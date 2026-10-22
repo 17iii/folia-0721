@@ -11,12 +11,16 @@ import {
     type CladdaghTuning,
     type DioramaTuning,
     type FumeTuning,
+    type InkTuning,
     type Line,
     type LumiereTuning,
+    type MirrorTuning,
     type MonetPortraitImage,
     type MonetTuning,
+    type NeonTuning,
     type PartitaTuning,
     type PendoloTuning,
+    type SparkleTuning,
     type SonnetTuning,
     type SubtitleContentMode,
     type TemperaTuning,
@@ -128,6 +132,13 @@ export interface VisualizerSharedProps {
     sonnetTuning?: SonnetTuning;
     temperaTuning?: TemperaTuning;
     lumiereTuning?: LumiereTuning;
+    // The tunings of the four newer lyric styles (neon / ink / mirror / sparkle). Each style's
+    // tuning.ts puts its own on the prop its renderer reads; a style that is not on screen has
+    // none, and the renderer falls back to the defaults.
+    neonTuning?: NeonTuning;
+    inkTuning?: InkTuning;
+    mirrorTuning?: MirrorTuning;
+    sparkleTuning?: SparkleTuning;
 }
 
 /**

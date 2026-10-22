@@ -8,6 +8,10 @@ import { Row, Slider, Toggle } from '../modal/settings/kit';
 
 export const percent = (value: number) => `${Math.round(value * 100)}%`;
 export const times = (value: number) => `${value.toFixed(2)}x`;
+/** A length in px: whole where it is whole, one decimal where it is not. */
+export const pixels = (value: number) => `${Number.isInteger(value) ? value : value.toFixed(1)}px`;
+/** A length of time in seconds. */
+export const seconds = (value: number) => `${value.toFixed(2)}s`;
 
 type SliderRowProps = {
     label: React.ReactNode;

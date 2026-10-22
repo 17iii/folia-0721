@@ -815,6 +815,170 @@ export const DEFAULT_LUMIERE_TUNING: LumiereTuning = {
   renderQuality: 'full',
 };
 
+// The tunings of the four newer lyric styles (neon / ink / mirror / sparkle) and of the three
+// newer backgrounds (aurora / grain / ripple). Each one is declared here and stored by its own
+// tuning.ts, so the settings window finds it through the declaration and not by name.
+
+/** 霓虹 (neon): the lit word is a tube of light on a dark stage. */
+export interface NeonTuning {
+  /** The strength of the halo around the lit word. */
+  glowIntensity: number;
+  /** How far the halo spreads: the blur of the outer shadow. */
+  glowSpread: number;
+  /** The width of the outline drawn on the lit word, in px. */
+  strokeWidth: number;
+  /** How bright the words that are not sung yet are. */
+  dimOpacity: number;
+  /** The halo breathes a little, as a real tube does. */
+  flickerEnabled: boolean;
+  /** 头顶与底下是否显示上下文歌词。 */
+  showContext: boolean;
+  /** 呼吸幅度：0 是完全静止。 */
+  idleMotion: number;
+}
+
+export const DEFAULT_NEON_TUNING: NeonTuning = {
+  glowIntensity: 1,
+  glowSpread: 1,
+  strokeWidth: 0.6,
+  dimOpacity: 0.32,
+  flickerEnabled: false,
+  showContext: true,
+  idleMotion: 1,
+};
+
+/** 墨韵 (ink): a serif line that soaks into the paper. */
+export interface InkTuning {
+  /** How strongly the lit word is washed with the theme's colours. */
+  washStrength: number;
+  /** The bleed of the ink: the blur on the words that are not sung yet, in px. */
+  bleedBlurPx: number;
+  /** How far the line rises into place, in px. */
+  riseDistance: number;
+  /** How long a line takes to come in, in seconds. */
+  transitionDuration: number;
+  /** 头顶与底下是否显示上下文歌词。 */
+  showContext: boolean;
+  /** 呼吸幅度：0 是完全静止。 */
+  idleMotion: number;
+}
+
+export const DEFAULT_INK_TUNING: InkTuning = {
+  washStrength: 1,
+  bleedBlurPx: 0.4,
+  riseDistance: 14,
+  transitionDuration: 0.5,
+  showContext: true,
+  idleMotion: 1,
+};
+
+/** 镜面 (mirror): the line stands on its own reflection. */
+export interface MirrorTuning {
+  /** Whether the reflection is drawn at all. */
+  showReflection: boolean;
+  /** How bright the reflection is. */
+  reflectionOpacity: number;
+  /** The gap between the line and its reflection, in px. */
+  reflectionGapPx: number;
+  /** How much of the reflection is blurred, in px. */
+  reflectionBlurPx: number;
+  /** 头顶与底下是否显示上下文歌词。 */
+  showContext: boolean;
+  /** 呼吸幅度：0 是完全静止。 */
+  idleMotion: number;
+}
+
+export const DEFAULT_MIRROR_TUNING: MirrorTuning = {
+  showReflection: true,
+  reflectionOpacity: 0.62,
+  reflectionGapPx: 10,
+  reflectionBlurPx: 0.45,
+  showContext: true,
+  idleMotion: 1,
+};
+
+/** 星屑 (sparkle): the lit word throws off light. */
+export interface SparkleTuning {
+  /** The size of the star on the lit word. */
+  sparkleSize: number;
+  /** How many stars are thrown off: none, one, or a few. */
+  sparkleDensity: number;
+  /** How fast the stars twinkle. */
+  twinkleSpeed: number;
+  /** The strength of the halo around the lit word. */
+  glowIntensity: number;
+  /** 头顶与底下是否显示上下文歌词。 */
+  showContext: boolean;
+  /** 呼吸幅度：0 是完全静止。 */
+  idleMotion: number;
+}
+
+export const DEFAULT_SPARKLE_TUNING: SparkleTuning = {
+  sparkleSize: 1,
+  sparkleDensity: 0.5,
+  twinkleSpeed: 1,
+  glowIntensity: 1,
+  showContext: true,
+  idleMotion: 1,
+};
+
+/** 极光 (aurora): the curtains of light that move over the stage. */
+export interface AuroraBackgroundTuning {
+  /** How fast the curtains drift. */
+  flowSpeed: number;
+  /** How bright the curtains are. */
+  intensity: number;
+  /** How many curtains hang over the stage. */
+  bandCount: number;
+  /** How much the curtains are blurred, from 0 (hard) to 1 (very soft). */
+  softness: number;
+}
+
+export const DEFAULT_AURORA_BACKGROUND_TUNING: AuroraBackgroundTuning = {
+  flowSpeed: 1,
+  intensity: 1,
+  bandCount: 3,
+  softness: 0.6,
+};
+
+/** 噪点 (grain): the film grain over the wash of colour. */
+export interface GrainBackgroundTuning {
+  /** How much grain there is. */
+  grainAmount: number;
+  /** The size of one grain tile, in px. */
+  grainSize: number;
+  /** How fast the grain crawls. */
+  driftSpeed: number;
+  /** How strongly the theme's colour is washed over the stage. */
+  washStrength: number;
+}
+
+export const DEFAULT_GRAIN_BACKGROUND_TUNING: GrainBackgroundTuning = {
+  grainAmount: 0.28,
+  grainSize: 140,
+  driftSpeed: 1,
+  washStrength: 1,
+};
+
+/** 涟漪 (ripple): the rings the music pushes out. */
+export interface RippleBackgroundTuning {
+  /** How many rings are on the stage at once. */
+  ringCount: number;
+  /** How fast a ring travels out. */
+  speed: number;
+  /** How far a ring travels and how bright it is. */
+  strength: number;
+  /** How thick a ring's line is, in px. */
+  ringWidthPx: number;
+}
+
+export const DEFAULT_RIPPLE_BACKGROUND_TUNING: RippleBackgroundTuning = {
+  ringCount: 4,
+  speed: 1,
+  strength: 1,
+  ringWidthPx: 2,
+};
+
 // Diorama's camera STYLE (calm/standard/chaotic) is not part of its tuning: like every other
 // visualizer it follows theme.animationIntensity (the player-panel intensity chip / AI themes), so
 // the theme system stays the single source of truth. The tuning only carries diorama-specific knobs.

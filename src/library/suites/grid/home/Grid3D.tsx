@@ -258,7 +258,17 @@ export const Grid3D: React.FC<Grid3DProps> = (props) => {
     const isSearchingActive = isSearching;
 
     // Background style mappings
-    const mainBg = isDaylight ? 'bg-white/40' : 'bg-black/20';
+    // 页面底子跟着主题（也就是跟着正在放的背景）走：之前这里是一层中性黑/白 + backdrop-blur，
+    // 糊在画面上就是一片灰，主题色一点也透不出来，所以整个书库看起来「灰蒙蒙」。
+    // 现在换成主题自己的背景色 + 一圈主题强调色的微光，背后在放什么，页面就是什么色。
+    const pageScrimStyle: React.CSSProperties = {
+        backgroundColor: theme.backgroundColor,
+        opacity: isDaylight ? 0.75 : 0.56,
+    };
+    const pageGlowStyle: React.CSSProperties = {
+        background: `radial-gradient(120% 78% at 50% -12%, color-mix(in srgb, ${theme.accentColor} 22%, transparent), transparent 68%)`,
+        opacity: isDaylight ? 0.55 : 0.75,
+    };
     const inputBg = isDaylight ? 'bg-black/5 focus:bg-black/10' : 'bg-white/5 focus:bg-white/10';
     const navPillBg = isDaylight ? 'bg-black/5' : 'bg-white/10';
     const navPillInactiveText = isDaylight ? 'text-black/60 hover:text-black' : 'text-white/60 hover:text-white';
@@ -297,8 +307,11 @@ export const Grid3D: React.FC<Grid3DProps> = (props) => {
         <div
             ref={gridRootRef}
             data-ponder-page-scope="grid-page"
-            className={`relative w-full h-full flex flex-col font-sans overflow-hidden ${mainBg} pointer-events-auto backdrop-blur-sm ${bottomPadding}`}
+            className={`relative w-full h-full flex flex-col font-sans overflow-hidden pointer-events-auto ${bottomPadding}`}
         >
+            {/* 页面底子：主题色的一层雾 + 顶上的一圈主题光。都压在内容下面，不挡点击。 */}
+            <div aria-hidden className="pointer-events-none absolute inset-0" style={pageScrimStyle} />
+            <div aria-hidden className="pointer-events-none absolute inset-0" style={pageGlowStyle} />
 
             {/* Main Header Container (Fades out when sliding/interacting) */}
             <div className="transition-opacity duration-300 ease-in-out z-20 opacity-100 select-none">

@@ -27,6 +27,10 @@ export const BUILTIN_VISUALIZER_MODES = [
     'still',
     'tempera',
     'tilt',
+    'neon',
+    'ink',
+    'mirror',
+    'sparkle',
 ] as const;
 
 export const BUILTIN_VISUALIZER_BACKGROUND_MODES = [
@@ -36,6 +40,9 @@ export const BUILTIN_VISUALIZER_BACKGROUND_MODES = [
     'nomand',
     'sora',
     'url',
+    'aurora',
+    'grain',
+    'ripple',
 ] as const;
 
 export const DEFAULT_VISUALIZER_MODE: VisualizerMode = 'classic';

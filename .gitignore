@@ -95,3 +95,14 @@ __pycache__/
 
 # Built by build/buildPythonRuntime.mjs - binary artifacts that live on the mirrors, not in git.
 dist-runtime/
+
+# 本地打包产物（安装包不进仓库，走 Release）
+release-*/
+.dist-old-*/
+.rel*-old-*/
+.release-*-old-*/
+
+# 本地调试截图与一次性探针
+preview/
+launch-check.cjs
+probe-shot.cjs
