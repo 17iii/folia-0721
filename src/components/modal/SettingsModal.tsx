@@ -343,6 +343,12 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         handleResetLatentBackgroundTuning: onResetLatentBackgroundTuning,
         handleSetSoraBackgroundTuning: onSoraBackgroundTuningChange,
         handleResetSoraBackgroundTuning: onResetSoraBackgroundTuning,
+        handleSetAuroraBackgroundTuning: onAuroraBackgroundTuningChange,
+        handleResetAuroraBackgroundTuning: onResetAuroraBackgroundTuning,
+        handleSetGrainBackgroundTuning: onGrainBackgroundTuningChange,
+        handleResetGrainBackgroundTuning: onResetGrainBackgroundTuning,
+        handleSetRippleBackgroundTuning: onRippleBackgroundTuningChange,
+        handleResetRippleBackgroundTuning: onResetRippleBackgroundTuning,
         handleSetMonetTuning: onMonetTuningChange,
         handleResetMonetTuning: onResetMonetTuning,
         handleSetPendoloTuning: onPendoloTuningChange,
@@ -385,6 +391,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
         nomandBackgroundTuning,
         latentBackgroundTuning,
         soraBackgroundTuning,
+        auroraBackgroundTuning,
+        grainBackgroundTuning,
+        rippleBackgroundTuning,
         monetTuning,
         pendoloTuning,
         sonnetTuning,
@@ -1976,6 +1985,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                             nomand: { tuning: nomandBackgroundTuning },
                             latent: { tuning: latentBackgroundTuning },
                             sora: { tuning: soraBackgroundTuning },
+                            aurora: { tuning: auroraBackgroundTuning },
+                            grain: { tuning: grainBackgroundTuning },
+                            ripple: { tuning: rippleBackgroundTuning },
                             url: {
                                 items: urlBackgroundList,
                                 selectedId: urlBackgroundSelectedId,
@@ -2009,6 +2021,18 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                             sora: {
                                 onTuningChange: onSoraBackgroundTuningChange,
                                 onResetTuning: onResetSoraBackgroundTuning,
+                            },
+                            aurora: {
+                                onTuningChange: onAuroraBackgroundTuningChange,
+                                onResetTuning: onResetAuroraBackgroundTuning,
+                            },
+                            grain: {
+                                onTuningChange: onGrainBackgroundTuningChange,
+                                onResetTuning: onResetGrainBackgroundTuning,
+                            },
+                            ripple: {
+                                onTuningChange: onRippleBackgroundTuningChange,
+                                onResetTuning: onResetRippleBackgroundTuning,
                             },
                             url: {
                                 onAdd: onAddUrlBackgroundItem,
@@ -2148,6 +2172,9 @@ const SettingsModal: React.FC<SettingsModalProps> = ({
                             nomand: { tuning: nomandBackgroundTuning },
                             latent: { tuning: latentBackgroundTuning },
                             sora: { tuning: soraBackgroundTuning },
+                            aurora: { tuning: auroraBackgroundTuning },
+                            grain: { tuning: grainBackgroundTuning },
+                            ripple: { tuning: rippleBackgroundTuning },
                             url: {
                                 items: urlBackgroundList,
                                 selectedId: urlBackgroundSelectedId,

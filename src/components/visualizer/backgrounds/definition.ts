@@ -2,10 +2,13 @@ import React from 'react';
 import type { MotionValue } from 'framer-motion';
 import type {
     AudioBands,
+    AuroraBackgroundTuning,
+    GrainBackgroundTuning,
     LatentBackgroundTuning,
     MonetBackgroundImage,
     MonetBackgroundTuning,
     NomandBackgroundTuning,
+    RippleBackgroundTuning,
     SoraBackgroundTuning,
     Theme,
     UrlBackgroundItem,
@@ -36,6 +39,15 @@ export interface VisualizerBackgroundConfig {
     };
     sora?: {
         tuning?: SoraBackgroundTuning;
+    };
+    aurora?: {
+        tuning?: AuroraBackgroundTuning;
+    };
+    grain?: {
+        tuning?: GrainBackgroundTuning;
+    };
+    ripple?: {
+        tuning?: RippleBackgroundTuning;
     };
     url?: {
         items?: UrlBackgroundItem[];
@@ -70,6 +82,18 @@ export interface VisualizerBackgroundActions {
     };
     sora?: {
         onTuningChange?: (patch: Partial<SoraBackgroundTuning>) => void;
+        onResetTuning?: () => void;
+    };
+    aurora?: {
+        onTuningChange?: (patch: Partial<AuroraBackgroundTuning>) => void;
+        onResetTuning?: () => void;
+    };
+    grain?: {
+        onTuningChange?: (patch: Partial<GrainBackgroundTuning>) => void;
+        onResetTuning?: () => void;
+    };
+    ripple?: {
+        onTuningChange?: (patch: Partial<RippleBackgroundTuning>) => void;
         onResetTuning?: () => void;
     };
     url?: {

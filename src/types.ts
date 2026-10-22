@@ -912,7 +912,7 @@ export type LatentBackgroundDisplayMode = 'dithering' | 'mesh' | 'both';
 export type LatentBackgroundColorSource = 'cover-theme' | 'cover-only';
 export type MonetAudioStyle = 'bar' | 'line';
 export type MonetPortraitSource = 'cover' | 'custom';
-export type BuiltinVisualizerBackgroundMode = 'common' | 'monet' | 'nomand' | 'latent' | 'url' | 'sora';
+export type BuiltinVisualizerBackgroundMode = 'common' | 'monet' | 'nomand' | 'latent' | 'url' | 'sora' | 'aurora' | 'grain' | 'ripple';
 export type VisualizerBackgroundMode = BuiltinVisualizerBackgroundMode | (string & {});
 
 export interface UrlBackgroundItem {
@@ -1061,6 +1061,63 @@ export const DEFAULT_LATENT_BACKGROUND_TUNING: LatentBackgroundTuning = {
 
 export const DEFAULT_SORA_BACKGROUND_TUNING: SoraBackgroundTuning = {
   blank: false,
+};
+
+/** 极光 (aurora): the curtains of light that move over the stage. */
+export interface AuroraBackgroundTuning {
+  /** How fast the curtains drift. */
+  flowSpeed: number;
+  /** How bright the curtains are. */
+  intensity: number;
+  /** How many curtains hang over the stage. */
+  bandCount: number;
+  /** How much the curtains are blurred, from 0 (hard) to 1 (very soft). */
+  softness: number;
+}
+
+export const DEFAULT_AURORA_BACKGROUND_TUNING: AuroraBackgroundTuning = {
+  flowSpeed: 1,
+  intensity: 1,
+  bandCount: 3,
+  softness: 0.6,
+};
+
+/** 噪点 (grain): the film grain over the wash of colour. */
+export interface GrainBackgroundTuning {
+  /** How much grain there is. */
+  grainAmount: number;
+  /** The size of one grain tile, in px. */
+  grainSize: number;
+  /** How fast the grain crawls. */
+  driftSpeed: number;
+  /** How strongly the theme's colour is washed over the stage. */
+  washStrength: number;
+}
+
+export const DEFAULT_GRAIN_BACKGROUND_TUNING: GrainBackgroundTuning = {
+  grainAmount: 0.28,
+  grainSize: 140,
+  driftSpeed: 1,
+  washStrength: 1,
+};
+
+/** 涟漪 (ripple): the rings the music pushes out. */
+export interface RippleBackgroundTuning {
+  /** How many rings are on the stage at once. */
+  ringCount: number;
+  /** How fast a ring travels out. */
+  speed: number;
+  /** How far a ring travels and how bright it is. */
+  strength: number;
+  /** How thick a ring's line is, in px. */
+  ringWidthPx: number;
+}
+
+export const DEFAULT_RIPPLE_BACKGROUND_TUNING: RippleBackgroundTuning = {
+  ringCount: 4,
+  speed: 1,
+  strength: 1,
+  ringWidthPx: 2,
 };
 
 export const DEFAULT_MONET_TUNING: MonetTuning = {

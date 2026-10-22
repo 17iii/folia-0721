@@ -58,6 +58,8 @@ import {
     createSearchArtistCollection,
 } from './components/app/search/searchCollectionAdapters';
 import { usePlayerPanelModel } from './components/app/player-panel/usePlayerPanelModel';
+import MusicPulseOverlay from './components/app/MusicPulseOverlay';
+import { useMusicFollowTheme } from './hooks/useMusicFollowTheme';
 import { createQueueMutations } from './components/app/player-panel/createQueueMutations';
 import { Album, Artist, LyricData, Theme, PlayerState, SongResult, ReplayGainMode, StatusMessage, PlaybackContext, StageLoopMode, UnifiedSong } from './types';
 import type { LocalSong } from './types';
@@ -405,6 +407,7 @@ export default function App() {
     const {
         disableHomeDynamicBackground,
         isDaylight,
+        musicFollowEnabled,
         setDaylightPreference,
     } = useThemeSettingsStore(useShallow(selectThemeSettingsSnapshot));
     const {
@@ -638,6 +641,9 @@ export default function App() {
         handleSongThemeAutoGenerateChange,
         handleThemeGenerationSourceChange,
     } = themeController;
+
+    // 音乐主题：换歌时按封面重算主题色；律动那一半在 MusicPulseOverlay 里。
+    useMusicFollowTheme({ enabled: musicFollowEnabled, coverUrl, isDaylight, theme, setTheme });
     // Folium: publish what is on screen to the main process (runtime snapshot
     // for main-side mods and the export service).
     useFoliumHostBridge(theme, isDaylight);
@@ -2789,6 +2795,12 @@ export default function App() {
             >
                 <PlayerBottomBarLayoutContext.Provider value={currentView === 'player'}>
                     {shouldMountVisualizer && <VisualizerRenderer {...visualizerRendererModel} />}
+                    <MusicPulseOverlay
+                        theme={theme}
+                        enabled={musicFollowEnabled}
+                        isDaylight={isDaylight}
+                        strength={theme.animationIntensity === 'calm' ? 0.6 : theme.animationIntensity === 'chaotic' ? 1.35 : 1}
+                    />
                 </PlayerBottomBarLayoutContext.Provider>
             </div>
 

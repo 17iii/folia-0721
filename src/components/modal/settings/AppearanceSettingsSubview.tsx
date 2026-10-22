@@ -172,6 +172,8 @@ const AppearanceSettingsSubview: React.FC<AppearanceSettingsSubviewProps> = ({
         handleToggleFollowSystemTheme: state.setFollowSystemTheme,
         handleToggleCoverColorBg: state.handleToggleCoverColorBg,
         handleToggleStaticMode: state.handleToggleStaticMode,
+        musicFollowEnabled: state.musicFollowEnabled,
+        handleToggleMusicFollow: state.handleToggleMusicFollow,
     })));
     const storePlayerChromeSettings = usePlayerChromeSettingsStore(useShallow(state => ({
         enablePlayerPageNativeBlur: state.enablePlayerPageNativeBlur,
@@ -828,6 +830,25 @@ const AppearanceSettingsSubview: React.FC<AppearanceSettingsSubviewProps> = ({
                                 </div>
                             </div>
                         )}
+                    </div>
+                    <div className={`p-3 rounded-xl border flex items-center justify-between gap-3 ${settingsCardClass}`}>
+                        <div className="space-y-1">
+                            <div className="text-sm font-medium" style={{ color: 'var(--text-primary)' }}>
+                                {t('options.musicFollowTheme')}
+                            </div>
+                            <div className="text-xs opacity-50" style={{ color: 'var(--text-secondary)' }}>
+                                {t('options.musicFollowThemeDesc')}
+                            </div>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => storeThemeSettings.handleToggleMusicFollow(!storeThemeSettings.musicFollowEnabled)}
+                            aria-pressed={storeThemeSettings.musicFollowEnabled}
+                            className={`w-12 h-6 rounded-full p-1 transition-colors shrink-0 ${!storeThemeSettings.musicFollowEnabled ? toggleOffBackgroundClass : ''}`}
+                            style={{ backgroundColor: storeThemeSettings.musicFollowEnabled ? theme?.secondaryColor || 'rgba(114, 119, 134, 1)' : undefined }}
+                        >
+                            <div className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${storeThemeSettings.musicFollowEnabled ? 'translate-x-6' : 'translate-x-0'}`} />
+                        </button>
                     </div>
                     <div className={`p-3 rounded-xl border flex items-center justify-between gap-3 ${settingsCardClass}`}>
                         <div className="space-y-1">

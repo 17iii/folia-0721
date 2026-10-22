@@ -195,6 +195,8 @@ export default {
   },
   "notifications": {
     "coverColorAdded": "Warna sampul ditambahkan",
+    "musicFollowOn": "Tema musik aktif",
+    "musicFollowOff": "Tema musik nonaktif",
     "coverColorDefault": "Menggunakan warna bawaan",
     "staticModeOn": "Mode statis diaktifkan",
     "staticModeOff": "Mode statis dimatikan",
@@ -2046,6 +2048,8 @@ export default {
     "daylightMode": "Mode Terang / Gelap",
     "followSystemTheme": "Ikuti Tema Sistem",
     "followSystemThemeDesc": "Secara otomatis beralih antara tema terang dan gelap mengikuti sistem. Pengalihan tema manual akan mematikan ini.",
+    "musicFollowTheme": "Tema Musik",
+    "musicFollowThemeDesc": "Warna tema mengikuti sampul lagu dan bernapas dengan bass saat diputar. Mematikannya memulihkan tema sebelumnya.",
     "lyricsRenderer": "Animasi Lirik",
     "lyricsRendererDesc": "Pilih mode animasi lirik yang digunakan di halaman pemutaran.",
     "modVisualizerSettingsDesc": "Pengaturan mode saat ini. Berlaku langsung dan tersimpan otomatis.",

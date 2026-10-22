@@ -1,0 +1,93 @@
+{
+  "appId": "top.izuna.foliamajor",
+  "productName": "Folia",
+  "directories": {
+    "output": "release-0717"
+  },
+  "files": [
+    "dist/**/*",
+    "electron/**/*",
+    "shared/**/*",
+    "package.json",
+    "build/miao.png",
+    "build/thumbar/*.png"
+  ],
+  "asarUnpack": [
+    "electron/analysis/htdemucs_runner.py",
+    "node_modules/onnxruntime-node/**/*.node",
+    "node_modules/@koromix/koffi-*/**/*.node"
+  ],
+  "extraResources": [
+    {
+      "from": "build/ffmpeg/${os}-${arch}",
+      "to": "ffmpeg-audio"
+    },
+    {
+      "from": "build/mnn/${os}-${arch}",
+      "to": "mnn",
+      "filter": [
+        "*folia_mnn.*"
+      ]
+    },
+    {
+      "from": "models",
+      "to": "models",
+      "filter": [
+        "beat_this-wgsl.bin",
+        "htdemucs-wgsl.bin"
+      ]
+    },
+    {
+      "from": "build/icon.png",
+      "to": "icon.png"
+    },
+    {
+      "from": "build/icon.png",
+      "to": "linux/icon.png"
+    },
+    {
+      "from": "build/trayTemplate.png",
+      "to": "trayTemplate.png"
+    },
+    {
+      "from": "build/trayTemplate@2x.png",
+      "to": "trayTemplate@2x.png"
+    },
+    {
+      "from": "build",
+      "to": ".",
+      "filter": [
+        "windowtolayer",
+        "windowtolayer-COPYING"
+      ]
+    }
+  ],
+  "win": {
+    "artifactName": "${productName}-Setup-${version}.${ext}",
+    "target": [
+      "nsis"
+    ],
+    "icon": "build/icon.png",
+    "extraResources": [
+      {
+        "from": "build",
+        "to": ".",
+        "filter": [
+          "folia-wallpaper-helper.exe"
+        ]
+      }
+    ]
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "installerLanguages": [
+      "en_US",
+      "zh_CN",
+      "id"
+    ],
+    "include": "build/installer.nsh"
+  },
+  "npmRebuild": false,
+  "electronDist": "C:/Users/21813/AppData/Local/electron/Cache/758a3dd4e4f04227b2ad64d94c8b9ceaa822ba77c767dcee83a537e44a590364/electron-v43.7.5-win32-x64.zip"
+}

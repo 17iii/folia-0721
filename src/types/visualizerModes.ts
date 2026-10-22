@@ -30,10 +30,13 @@ export const BUILTIN_VISUALIZER_MODES = [
 ] as const;
 
 export const BUILTIN_VISUALIZER_BACKGROUND_MODES = [
+    'aurora',
     'common',
+    'grain',
     'latent',
     'monet',
     'nomand',
+    'ripple',
     'sora',
     'url',
 ] as const;

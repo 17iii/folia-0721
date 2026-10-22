@@ -1,4 +1,4 @@
-import { DEFAULT_CADENZA_TUNING, DEFAULT_CAPPELLA_TUNING, DEFAULT_CLADDAGH_TUNING, DEFAULT_CLASSIC_TUNING, DEFAULT_DIORAMA_TUNING, DEFAULT_FUME_TUNING, DEFAULT_LATENT_BACKGROUND_TUNING, DEFAULT_LUMIERE_TUNING, DEFAULT_MONET_BACKGROUND_TUNING, DEFAULT_MONET_TUNING, DEFAULT_NOMAND_BACKGROUND_TUNING, DEFAULT_PARTITA_TUNING, DEFAULT_PENDOLO_TUNING, DEFAULT_SONNET_TUNING, DEFAULT_SORA_BACKGROUND_TUNING, DEFAULT_TEMPERA_LAYER_IMAGE, DEFAULT_TEMPERA_TUNING, DEFAULT_TILT_TUNING, DIORAMA_PARTICLE_DENSITY_MAX, DIORAMA_PARTICLE_DENSITY_MIN, DIORAMA_PARTICLE_GLOW_INTENSITY_MAX, DIORAMA_PARTICLE_GLOW_INTENSITY_MIN, DIORAMA_PARTICLE_SIZE_MAX, DIORAMA_PARTICLE_SIZE_MIN, TEMPERA_MAX_LAYER_IMAGES, type CadenzaTuning, type CappellaAvatarSource, type CappellaTuning, type ClassicTuning, type CladdaghTuning, type DioramaTuning, type FumeTuning, type LatentBackgroundColorSource, type LatentBackgroundDisplayMode, type LatentBackgroundTuning, type LumiereTuning, type MonetBackgroundLayout, type MonetBackgroundSource, type MonetBackgroundTuning, type MonetBackgroundWashColorMode, type MonetPortraitSource, type MonetTuning, type NomandBackgroundDitheringType, type NomandBackgroundEffect, type NomandBackgroundSource, type NomandBackgroundTuning, type PartitaTuning, type PendoloTuning, type SonnetTuning, type SoraBackgroundTuning, type TemperaLayerImage, type TemperaTuning, type TiltTuning, type UrlBackgroundItem, type VisualizerBackgroundMode, type VisualizerFrameRate, type VisualizerMode } from '../types';
+import { DEFAULT_AURORA_BACKGROUND_TUNING, DEFAULT_CADENZA_TUNING, DEFAULT_CAPPELLA_TUNING, DEFAULT_CLADDAGH_TUNING, DEFAULT_CLASSIC_TUNING, DEFAULT_DIORAMA_TUNING, DEFAULT_FUME_TUNING, DEFAULT_GRAIN_BACKGROUND_TUNING, DEFAULT_LATENT_BACKGROUND_TUNING, DEFAULT_LUMIERE_TUNING, DEFAULT_MONET_BACKGROUND_TUNING, DEFAULT_MONET_TUNING, DEFAULT_NOMAND_BACKGROUND_TUNING, DEFAULT_PARTITA_TUNING, DEFAULT_PENDOLO_TUNING, DEFAULT_RIPPLE_BACKGROUND_TUNING, DEFAULT_SONNET_TUNING, DEFAULT_SORA_BACKGROUND_TUNING, DEFAULT_TEMPERA_LAYER_IMAGE, DEFAULT_TEMPERA_TUNING, DEFAULT_TILT_TUNING, DIORAMA_PARTICLE_DENSITY_MAX, DIORAMA_PARTICLE_DENSITY_MIN, DIORAMA_PARTICLE_GLOW_INTENSITY_MAX, DIORAMA_PARTICLE_GLOW_INTENSITY_MIN, DIORAMA_PARTICLE_SIZE_MAX, DIORAMA_PARTICLE_SIZE_MIN, TEMPERA_MAX_LAYER_IMAGES, type AuroraBackgroundTuning, type CadenzaTuning, type CappellaAvatarSource, type CappellaTuning, type ClassicTuning, type CladdaghTuning, type DioramaTuning, type FumeTuning, type GrainBackgroundTuning, type LatentBackgroundColorSource, type LatentBackgroundDisplayMode, type LatentBackgroundTuning, type LumiereTuning, type MonetBackgroundLayout, type MonetBackgroundSource, type MonetBackgroundTuning, type MonetBackgroundWashColorMode, type MonetPortraitSource, type MonetTuning, type NomandBackgroundDitheringType, type NomandBackgroundEffect, type NomandBackgroundSource, type NomandBackgroundTuning, type PartitaTuning, type PendoloTuning, type RippleBackgroundTuning, type SonnetTuning, type SoraBackgroundTuning, type TemperaLayerImage, type TemperaTuning, type TiltTuning, type UrlBackgroundItem, type VisualizerBackgroundMode, type VisualizerFrameRate, type VisualizerMode } from '../types';
 // 只做字符串校验，走 types/visualizerModes 而不是 registry：后者的 eager glob 会把 13 个
 // renderer（含 three.js）拉进来，而这里读的只是一个 localStorage 字符串。
 // mod 模式在启动时本来就看不到——bootstrap.tsx 的 restoreStoredModVisualizer 在 mods 注册完
@@ -911,6 +911,78 @@ export const resolveStoredSoraBackgroundTuning = (
 ): SoraBackgroundTuning => ({
     blank: typeof parsed.blank === 'boolean' ? parsed.blank : DEFAULT_SORA_BACKGROUND_TUNING.blank,
 });
+
+export const resolveStoredAuroraBackgroundTuning = (
+    parsed: Partial<AuroraBackgroundTuning>,
+): AuroraBackgroundTuning => ({
+    flowSpeed: typeof parsed.flowSpeed === 'number' ? Math.min(3, Math.max(0.2, parsed.flowSpeed)) : DEFAULT_AURORA_BACKGROUND_TUNING.flowSpeed,
+    intensity: typeof parsed.intensity === 'number' ? Math.min(2, Math.max(0, parsed.intensity)) : DEFAULT_AURORA_BACKGROUND_TUNING.intensity,
+    bandCount: typeof parsed.bandCount === 'number' ? Math.min(6, Math.max(1, Math.round(parsed.bandCount))) : DEFAULT_AURORA_BACKGROUND_TUNING.bandCount,
+    softness: typeof parsed.softness === 'number' ? Math.min(1, Math.max(0, parsed.softness)) : DEFAULT_AURORA_BACKGROUND_TUNING.softness,
+});
+
+export const readStoredAuroraBackgroundTuning = (): AuroraBackgroundTuning => {
+    if (typeof window === 'undefined') {
+        return DEFAULT_AURORA_BACKGROUND_TUNING;
+    }
+
+    const saved = localStorage.getItem('aurora_background_tuning');
+    if (!saved) return DEFAULT_AURORA_BACKGROUND_TUNING;
+
+    try {
+        return resolveStoredAuroraBackgroundTuning(JSON.parse(saved) as Partial<AuroraBackgroundTuning>);
+    } catch {
+        return DEFAULT_AURORA_BACKGROUND_TUNING;
+    }
+};
+
+export const resolveStoredGrainBackgroundTuning = (
+    parsed: Partial<GrainBackgroundTuning>,
+): GrainBackgroundTuning => ({
+    grainAmount: typeof parsed.grainAmount === 'number' ? Math.min(1, Math.max(0, parsed.grainAmount)) : DEFAULT_GRAIN_BACKGROUND_TUNING.grainAmount,
+    grainSize: typeof parsed.grainSize === 'number' ? Math.min(300, Math.max(40, parsed.grainSize)) : DEFAULT_GRAIN_BACKGROUND_TUNING.grainSize,
+    driftSpeed: typeof parsed.driftSpeed === 'number' ? Math.min(3, Math.max(0, parsed.driftSpeed)) : DEFAULT_GRAIN_BACKGROUND_TUNING.driftSpeed,
+    washStrength: typeof parsed.washStrength === 'number' ? Math.min(1, Math.max(0, parsed.washStrength)) : DEFAULT_GRAIN_BACKGROUND_TUNING.washStrength,
+});
+
+export const readStoredGrainBackgroundTuning = (): GrainBackgroundTuning => {
+    if (typeof window === 'undefined') {
+        return DEFAULT_GRAIN_BACKGROUND_TUNING;
+    }
+
+    const saved = localStorage.getItem('grain_background_tuning');
+    if (!saved) return DEFAULT_GRAIN_BACKGROUND_TUNING;
+
+    try {
+        return resolveStoredGrainBackgroundTuning(JSON.parse(saved) as Partial<GrainBackgroundTuning>);
+    } catch {
+        return DEFAULT_GRAIN_BACKGROUND_TUNING;
+    }
+};
+
+export const resolveStoredRippleBackgroundTuning = (
+    parsed: Partial<RippleBackgroundTuning>,
+): RippleBackgroundTuning => ({
+    ringCount: typeof parsed.ringCount === 'number' ? Math.min(10, Math.max(1, Math.round(parsed.ringCount))) : DEFAULT_RIPPLE_BACKGROUND_TUNING.ringCount,
+    speed: typeof parsed.speed === 'number' ? Math.min(3, Math.max(0.2, parsed.speed)) : DEFAULT_RIPPLE_BACKGROUND_TUNING.speed,
+    strength: typeof parsed.strength === 'number' ? Math.min(2, Math.max(0, parsed.strength)) : DEFAULT_RIPPLE_BACKGROUND_TUNING.strength,
+    ringWidthPx: typeof parsed.ringWidthPx === 'number' ? Math.min(8, Math.max(0.5, parsed.ringWidthPx)) : DEFAULT_RIPPLE_BACKGROUND_TUNING.ringWidthPx,
+});
+
+export const readStoredRippleBackgroundTuning = (): RippleBackgroundTuning => {
+    if (typeof window === 'undefined') {
+        return DEFAULT_RIPPLE_BACKGROUND_TUNING;
+    }
+
+    const saved = localStorage.getItem('ripple_background_tuning');
+    if (!saved) return DEFAULT_RIPPLE_BACKGROUND_TUNING;
+
+    try {
+        return resolveStoredRippleBackgroundTuning(JSON.parse(saved) as Partial<RippleBackgroundTuning>);
+    } catch {
+        return DEFAULT_RIPPLE_BACKGROUND_TUNING;
+    }
+};
 
 export const readStoredSoraBackgroundTuning = (): SoraBackgroundTuning => {
     if (typeof window === 'undefined') {

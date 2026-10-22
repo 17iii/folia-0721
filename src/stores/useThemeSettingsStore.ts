@@ -49,11 +49,14 @@ const readStoredDisableHomeDynamicBackground = (): boolean => {
 
 export type ThemeSettingsState = {
     useCoverColorBg: boolean;
+    /** 音乐主题：主题色跟随当前歌曲封面，随低频能量轻微呼吸。 */
+    musicFollowEnabled: boolean;
     staticMode: boolean;
     disableHomeDynamicBackground: boolean;
     isDaylight: boolean;
     followSystemTheme: boolean;
     handleToggleCoverColorBg: (enable: boolean) => void;
+    handleToggleMusicFollow: (enable: boolean) => void;
     handleToggleStaticMode: (enable: boolean) => void;
     handleToggleDisableHomeDynamicBackground: (disable: boolean) => void;
     setDaylightPreference: (isDaylight: boolean) => void;
@@ -63,6 +66,7 @@ export type ThemeSettingsState = {
 
 export const useThemeSettingsStore = create<ThemeSettingsState>((set, get) => ({
     useCoverColorBg: getStoredBoolean('use_cover_color_bg', false),
+    musicFollowEnabled: getStoredBoolean('music_follow_enabled', false),
     staticMode: getStoredBoolean('static_mode', false),
     disableHomeDynamicBackground: readStoredDisableHomeDynamicBackground(),
     followSystemTheme: initialFollowSystemTheme,
@@ -73,6 +77,14 @@ export const useThemeSettingsStore = create<ThemeSettingsState>((set, get) => ({
         setStatusMessage({
             type: 'info',
             text: i18n.t('notifications.' + (enable ? 'coverColorAdded' : 'coverColorDefault')),
+        });
+    },
+    handleToggleMusicFollow: (enable) => {
+        setStoredBoolean('music_follow_enabled', enable);
+        set({ musicFollowEnabled: enable });
+        setStatusMessage({
+            type: 'info',
+            text: i18n.t('notifications.' + (enable ? 'musicFollowOn' : 'musicFollowOff')),
         });
     },
     handleToggleStaticMode: (enable) => {
@@ -139,12 +151,14 @@ export const selectThemeSettingsSnapshot = (state: ThemeSettingsState) => ({
     isDaylight: state.isDaylight,
     followSystemTheme: state.followSystemTheme,
     useCoverColorBg: state.useCoverColorBg,
+    musicFollowEnabled: state.musicFollowEnabled,
     staticMode: state.staticMode,
     disableHomeDynamicBackground: state.disableHomeDynamicBackground,
     setDaylightPreference: state.setDaylightPreference,
     setDaylightPreferenceFromSystem: state.setDaylightPreferenceFromSystem,
     setFollowSystemTheme: state.setFollowSystemTheme,
     handleToggleCoverColorBg: state.handleToggleCoverColorBg,
+    handleToggleMusicFollow: state.handleToggleMusicFollow,
     handleToggleStaticMode: state.handleToggleStaticMode,
     handleToggleDisableHomeDynamicBackground: state.handleToggleDisableHomeDynamicBackground,
 });

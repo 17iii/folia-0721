@@ -21,6 +21,9 @@ export const useVisualizerBackgroundConfig = (): VisualizerBackgroundConfig => {
         nomandBackgroundTuning: state.nomandBackgroundTuning,
         latentBackgroundTuning: state.latentBackgroundTuning,
         soraBackgroundTuning: state.soraBackgroundTuning,
+        auroraBackgroundTuning: state.auroraBackgroundTuning,
+        grainBackgroundTuning: state.grainBackgroundTuning,
+        rippleBackgroundTuning: state.rippleBackgroundTuning,
         urlBackgroundList: state.urlBackgroundList,
         urlBackgroundSelectedId: state.urlBackgroundSelectedId,
     })));
@@ -41,6 +44,9 @@ export const useVisualizerBackgroundConfig = (): VisualizerBackgroundConfig => {
         nomand: { tuning: settings.nomandBackgroundTuning },
         latent: { tuning: settings.latentBackgroundTuning },
         sora: { tuning: settings.soraBackgroundTuning },
+        aurora: { tuning: settings.auroraBackgroundTuning },
+        grain: { tuning: settings.grainBackgroundTuning },
+        ripple: { tuning: settings.rippleBackgroundTuning },
         url: {
             items: settings.urlBackgroundList,
             selectedId: settings.urlBackgroundSelectedId,
