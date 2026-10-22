@@ -47,9 +47,11 @@
 | 64+ | `src/stores/useStatusMessageStore.ts` |
 | 32+ | `dev/probes/definition.ts` |
 | 32+ | `src/components/modal/settings/kit/motion.ts` |
+| 32+ | `src/components/visualizer/backgrounds/definition.ts` |
 | 32+ | `src/components/visualizer/colorMix.ts` |
 | 32+ | `src/components/visualizer/definition.ts` |
 | 32+ | `src/components/visualizer/registry.tsx` |
+| 32+ | `src/components/visualizer/tuningDefinition.ts` |
 | 32+ | `src/components/wall/wallSlots.ts` |
 | 32+ | `src/i18n/config.ts` |
 | 32+ | `src/library/core/account/account.contract.ts` |
@@ -128,6 +130,7 @@
 - `dev/probes/ponderBravaisSeam.probe.tsx`
 - `dev/probes/ponderHint.probe.tsx`
 - `dev/probes/ponderPageSurfaces.probe.tsx`
+- `dev/probes/presetLyrics.probe.tsx`
 - `dev/probes/remoteActions.probe.tsx`
 - `dev/probes/settingsHelpActions.probe.tsx`
 - `dev/probes/settingsNavigation.probe.tsx`
@@ -231,10 +234,13 @@
 
 ### `src/components/visualizer/backgrounds/registry.tsx`
 
+- `src/components/visualizer/backgrounds/aurora/entry.tsx`
 - `src/components/visualizer/backgrounds/common/entry.tsx`
+- `src/components/visualizer/backgrounds/grain/entry.tsx`
 - `src/components/visualizer/backgrounds/latent/entry.tsx`
 - `src/components/visualizer/backgrounds/monet/entry.tsx`
 - `src/components/visualizer/backgrounds/nomand/entry.tsx`
+- `src/components/visualizer/backgrounds/ripple/entry.tsx`
 - `src/components/visualizer/backgrounds/sora/entry.tsx`
 - `src/components/visualizer/backgrounds/url/entry.tsx`
 
@@ -246,20 +252,27 @@
 - `src/components/visualizer/classic/entry.tsx`
 - `src/components/visualizer/diorama/entry.tsx`
 - `src/components/visualizer/fume/entry.tsx`
+- `src/components/visualizer/ink/entry.tsx`
 - `src/components/visualizer/lumiere/entry.tsx`
+- `src/components/visualizer/mirror/entry.tsx`
 - `src/components/visualizer/monet/entry.tsx`
+- `src/components/visualizer/neon/entry.tsx`
 - `src/components/visualizer/partita/entry.tsx`
 - `src/components/visualizer/pendolo/entry.tsx`
 - `src/components/visualizer/sonnet/entry.tsx`
+- `src/components/visualizer/sparkle/entry.tsx`
 - `src/components/visualizer/still/entry.tsx`
 - `src/components/visualizer/tempera/entry.tsx`
 - `src/components/visualizer/tilt/entry.tsx`
 
 ### `src/components/visualizer/tuningRegistry.ts`
 
+- `src/components/visualizer/backgrounds/aurora/tuning.ts`
+- `src/components/visualizer/backgrounds/grain/tuning.ts`
 - `src/components/visualizer/backgrounds/latent/tuning.ts`
 - `src/components/visualizer/backgrounds/monet/tuning.ts`
 - `src/components/visualizer/backgrounds/nomand/tuning.ts`
+- `src/components/visualizer/backgrounds/ripple/tuning.ts`
 - `src/components/visualizer/backgrounds/sora/tuning.ts`
 - `src/components/visualizer/backgrounds/url/settings.ts`
 - `src/components/visualizer/cadenza/tuning.ts`
@@ -268,11 +281,15 @@
 - `src/components/visualizer/classic/tuning.ts`
 - `src/components/visualizer/diorama/tuning.ts`
 - `src/components/visualizer/fume/tuning.ts`
+- `src/components/visualizer/ink/tuning.ts`
 - `src/components/visualizer/lumiere/tuning.ts`
+- `src/components/visualizer/mirror/tuning.ts`
 - `src/components/visualizer/monet/tuning.ts`
+- `src/components/visualizer/neon/tuning.ts`
 - `src/components/visualizer/partita/tuning.ts`
 - `src/components/visualizer/pendolo/tuning.ts`
 - `src/components/visualizer/sonnet/tuning.ts`
+- `src/components/visualizer/sparkle/tuning.ts`
 - `src/components/visualizer/tempera/tuning.ts`
 - `src/components/visualizer/tilt/tuning.ts`
 
@@ -290,11 +307,15 @@
 - `src/components/visualizer/classic/tuning.ts`
 - `src/components/visualizer/diorama/tuning.ts`
 - `src/components/visualizer/fume/tuning.ts`
+- `src/components/visualizer/ink/tuning.ts`
 - `src/components/visualizer/lumiere/tuning.ts`
+- `src/components/visualizer/mirror/tuning.ts`
 - `src/components/visualizer/monet/tuning.ts`
+- `src/components/visualizer/neon/tuning.ts`
 - `src/components/visualizer/partita/tuning.ts`
 - `src/components/visualizer/pendolo/tuning.ts`
 - `src/components/visualizer/sonnet/tuning.ts`
+- `src/components/visualizer/sparkle/tuning.ts`
 - `src/components/visualizer/tempera/tuning.ts`
 - `src/components/visualizer/tilt/tuning.ts`
 
@@ -305,7 +326,10 @@
 
 下面这些边的依赖方向本身就是错的：
 
+- `src/services/obs/visualSettingsConfig.ts` → `src/components/visualizer/tuningRegistry.ts`  —— service 不应依赖组件
+- `src/services/sync/settingsSnapshot.ts` → `src/components/visualizer/tuningRegistry.ts`  —— service 不应依赖组件
 - `src/stores/useVisualizerSettingsStore.ts` → `src/components/visualizer/registry.tsx`  —— store 不应依赖组件
+- `src/stores/useVisualizerSettingsStore.ts` → `src/components/visualizer/tuningRegistry.ts`  —— store 不应依赖组件
 - `src/utils/lyrics/lyricMatchSources.ts` → `src/stores/useOnlineProviderAccountStore.ts`  —— 纯变换不应依赖 UI 或状态
 
 ### 目录归属存疑
@@ -313,12 +337,9 @@
 这些边命中了规则，但目标模块在运行时根本不含 UI（不传递依赖 react）。
 依赖方向没问题，是文件住在了 UI 目录（`src/components/`、`src/library/` 的 suites / app）下面。修法是移动文件，不是改依赖。
 
-- `src/services/obs/visualSettingsConfig.ts` → `src/components/visualizer/tuningRegistry.ts`
 - `src/services/ponder/pagePonderTarget.ts` → `src/components/modal/settings/navigation/settingsAnchorModel.ts`
-- `src/services/sync/settingsSnapshot.ts` → `src/components/visualizer/tuningRegistry.ts`
 - `src/stores/useExploreFeedStore.ts` → `src/components/app/home/explore/exploreFeedMemory.ts`
 - `src/stores/usePlaybackStore.ts` → `src/components/app/playback/createCoverUrlResolver.ts`
 - `src/stores/useSettingsModalStore.ts` → `src/components/command-palette/pinnedCommandPreferences.ts`
-- `src/stores/useVisualizerSettingsStore.ts` → `src/components/visualizer/tuningRegistry.ts`
 - `src/utils/themeColorMath.ts` → `src/components/visualizer/colorMix.ts`
 
