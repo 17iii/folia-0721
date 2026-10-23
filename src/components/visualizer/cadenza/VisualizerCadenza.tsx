@@ -888,12 +888,15 @@ const buildWordPlacements = (
             overlapArea,
         };
     };
-    const pushPlacementRect = (left: number, top: number, width: number, height: number, padding: number) => {
+    // x 是**中心**（画布和 DOM 叠加层都按中心定位：ctx.fillText(text, -width/2, ...)）。
+    // 之前这里按左边缘算，等于每个词整体右移了半个自身宽度：词一宽一窄挨在一起就会压叠，
+    // 而且占位矩形也跟着偏移，避让自然算不准。
+    const pushPlacementRect = (centerX: number, baselineY: number, width: number, height: number, padding: number) => {
         registerOccupiedRect({
-            left: left - padding,
-            top: top - height - padding,
-            right: left + width + padding,
-            bottom: top + padding,
+            left: centerX - width / 2 - padding,
+            top: baselineY - height - padding,
+            right: centerX + width / 2 + padding,
+            bottom: baselineY + padding,
         });
     };
     /* eslint-disable-next-line no-warning-comments -- @AI: KEEP THIS EXACTLY AS IS */
@@ -914,7 +917,7 @@ const buildWordPlacements = (
                 fragment,
                 lineIndex,
                 fragmentIndex,
-                baseX: lineLeft + fragment.startX,
+                baseX: lineLeft + fragment.startX + width / 2,
                 baseY: baselineY,
                 emphasis,
                 width,
@@ -934,6 +937,34 @@ const buildWordPlacements = (
             return a.lineIndex - b.lineIndex;
         }
         return a.fragment.startX - b.fragment.startX;
+    });
+    /*
+     * 排版给出的 startX 是"按字体排版算的"，但真正画出来的宽度是 width（含字距/测量误差），
+     * 两者不完全相等；再加上同一句被拆成多个 fragment 时，各 fragment 的起点可能贴得过近。
+     * 结果就是相邻词压在一起。这里按行做一遍"最小间距"整理：从左往右量，后一个词不够位置
+     * 就往右推到刚好不压，保证排版基线本身是干净的（后面的随机散射才有意义）。
+     */
+    const plansByLine = new Map<number, typeof placementPlans>();
+    placementPlans.forEach(plan => {
+        const list = plansByLine.get(plan.lineIndex);
+        if (list) {
+            list.push(plan);
+        } else {
+            plansByLine.set(plan.lineIndex, [plan]);
+        }
+    });
+    const minGap = Math.max(10, fontPx * 0.08);
+    plansByLine.forEach(list => {
+        list.sort((left, right) => left.baseX - right.baseX);
+        let rightEdge = Number.NEGATIVE_INFINITY;
+        list.forEach(plan => {
+            const half = (plan.width * plan.scale) / 2;
+            const leftMost = rightEdge + minGap + half;
+            if (plan.baseX < leftMost) {
+                plan.baseX = leftMost;
+            }
+            rightEdge = plan.baseX + half;
+        });
     });
     const primaryPlanByWordIndex = new Map<number, (typeof placementPlans)[number]>();
     placementPlans.forEach(plan => {
@@ -960,10 +991,11 @@ const buildWordPlacements = (
         const entryOffsetX = 0;
         const entryOffsetY = 0;
         const step = Math.max(10, Math.round(fontPx * 0.14));
-        // 散射半径必须小：之前普通词能在 2.2 倍行高里乱跑，词一多就互相压在一起。
+        // 只留几像素的"手抖"级偏移。之前普通词能在 2.2 倍行高（后来 0.8 倍）里乱跑，
+        // 一个词横move 60px 就直接压到邻居身上——排版本身已经是正确的，这里不该再动位置。
         const maxRadius = emphasis > 1
-            ? Math.max(18, lineHeight * 0.42)
-            : Math.max(lineHeight * 0.8, collisionWidth * 0.28, 26);
+            ? Math.max(8, lineHeight * 0.1)
+            : Math.max(4, lineHeight * 0.04);
         // 所有词都待在排版给它的位置：不再有"主角词搬到中央"这一步。
         const preferredX = plan.baseX;
         const preferredY = plan.baseY;
@@ -1002,9 +1034,9 @@ const buildWordPlacements = (
                 });
 
             for (const [dx, dy] of candidates) {
-                const left = preferredX + dx - padding;
+                const left = preferredX + dx - collisionWidth / 2 - padding;
                 const top = preferredY + dy - collisionHeight - padding;
-                const right = left + collisionWidth + padding * 2;
+                const right = preferredX + dx + collisionWidth / 2 + padding;
                 const bottom = top + collisionHeight + padding * 2;
                 const withinBounds = left >= horizontalMin
                     && right <= horizontalMax
