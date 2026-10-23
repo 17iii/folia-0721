@@ -1097,7 +1097,8 @@ export interface GrainBackgroundTuning {
 export const DEFAULT_GRAIN_BACKGROUND_TUNING: GrainBackgroundTuning = {
   grainAmount: 0.28,
   grainSize: 140,
-  driftSpeed: 1,
+  // 0 = 静止。噪点是质感，默认不该自己动；想让它"爬"再把滑杆往上推。
+  driftSpeed: 0,
   washStrength: 1,
 };
 

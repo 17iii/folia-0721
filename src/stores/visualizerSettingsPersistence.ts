@@ -950,7 +950,7 @@ export const readStoredGrainBackgroundTuning = (): GrainBackgroundTuning => {
         return DEFAULT_GRAIN_BACKGROUND_TUNING;
     }
 
-    const saved = localStorage.getItem('grain_background_tuning');
+    const saved = localStorage.getItem('grain_background_tuning_v2');
     if (!saved) return DEFAULT_GRAIN_BACKGROUND_TUNING;
 
     try {

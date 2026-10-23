@@ -690,13 +690,13 @@ export const useVisualizerSettingsStore = create<VisualizerSettingsState>((set, 
     handleSetGrainBackgroundTuning: (patch) => {
         const next = resolveStoredGrainBackgroundTuning({ ...get().grainBackgroundTuning, ...patch });
         if (typeof window !== 'undefined') {
-            localStorage.setItem('grain_background_tuning', JSON.stringify(next));
+            localStorage.setItem('grain_background_tuning_v2', JSON.stringify(next));
         }
         set({ grainBackgroundTuning: next });
     },
     handleResetGrainBackgroundTuning: () => {
         if (typeof window !== 'undefined') {
-            localStorage.setItem('grain_background_tuning', JSON.stringify(DEFAULT_GRAIN_BACKGROUND_TUNING));
+            localStorage.setItem('grain_background_tuning_v2', JSON.stringify(DEFAULT_GRAIN_BACKGROUND_TUNING));
         }
         set({ grainBackgroundTuning: DEFAULT_GRAIN_BACKGROUND_TUNING });
         setStatusMessage({ type: 'info', text: i18n.t('notifications.grainBgReset') });

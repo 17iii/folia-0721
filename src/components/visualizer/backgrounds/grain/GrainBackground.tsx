@@ -46,7 +46,13 @@ const GrainBackground: React.FC<{
     }, []);
 
     const tileSize = Math.max(40, Math.min(300, Math.round(tuning.grainSize)));
-    const driftDuration = 0.7 / Math.max(0.05, tuning.driftSpeed);
+    // 颗粒是平铺贴图：位移正好走完**一个贴图**时，画面与起点逐像素相同，循环因此无缝。
+    // 0 就是完全静止（默认）——噪点是质感，不该自己抖；想要"颗粒在爬"再把爬行速度往上加，
+    // 速度 1 约 18 秒走一张贴图。
+    const driftDistance = tileSize;
+    const driftSpeed = Math.max(0, tuning.driftSpeed);
+    const isDrifting = !frozen && driftSpeed > 0.05;
+    const driftDuration = 18 / Math.max(0.05, driftSpeed);
     const wash = Math.max(0, Math.min(1, tuning.washStrength));
     // 亮底上同样的颗粒会显得像电视雪花，压掉近一半。
     const grainOpacity = Math.max(0.04, Math.min(0.5, tuning.grainAmount * (tint.isLightBase ? 0.9 : 1.7)));
@@ -77,8 +83,8 @@ const GrainBackground: React.FC<{
                         mixBlendMode: tint.isLightBase ? 'multiply' : 'overlay',
                         opacity: grainOpacity,
                     }}
-                    animate={frozen ? undefined : { x: [0, -9, 4, 0], y: [0, 7, -5, 0] }}
-                    transition={frozen ? undefined : { duration: driftDuration, repeat: Infinity, ease: 'linear' }}
+                    animate={isDrifting ? { x: [0, -driftDistance], y: [0, driftDistance] } : undefined}
+                    transition={isDrifting ? { duration: driftDuration, repeat: Infinity, ease: 'linear' } : undefined}
                 />
             )}
             {/* 四角极轻地压一下，把注意力收到中间；不用辅色，免得又出现色块。 */}
