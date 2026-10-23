@@ -471,16 +471,14 @@ const resolveLineRenderTiming = (line: Line): ResolvedLineRenderTiming => {
 };
 
 const buildDomTextShadow = (color: string, intensity: number, blurScale = 1) => {
-    const glow = clamp(intensity, 0, 1.6);
-    if (glow <= 0.01) {
-        return 'none';
-    }
-
-    return [
-        `0 0 40px ${colorWithAlpha(color, Math.min(0.98, glow))}`,
-        `0 0 40px ${colorWithAlpha(color, Math.min(0.92, glow * 0.92))}`,
-        `0 0 40px ${colorWithAlpha(color, Math.min(0.35, glow * 0.26))}`,
-    ].join(', ');
+    // 这里原本给每个字加三层 `0 0 40px` 的 text-shadow。中文字形宽高接近，40px 的模糊半径
+    // 会把每个字糊成一个**圆形光斑**，相邻字的斑互相压叠，看起来就是"每个字有个小圆圈、
+    // 歌词还重叠"。心象真正需要的辉光由画布层 drawShadowGlowText 负责——它跟着字形走，
+    // 不会糊成圆；所以 DOM 这层不再画阴影，只保留文字本身的明暗呼吸。
+    void color;
+    void intensity;
+    void blurScale;
+    return 'none';
 };
 
 const chooseFontPx = (width: number, line: Line) => {
@@ -908,7 +906,8 @@ const buildWordPlacements = (
         return lineView.fragments.map((fragment, fragmentIndex) => {
             const emphasis = emphasisMap.get(fragment.wordIndex) ?? 1;
             const width = Math.max(fragment.endX - fragment.startX, fontPx * 0.18);
-            const scale = emphasis > 1 ? baseScale * emphasis : baseScale;
+            // 字号统一：放大强调词是重叠的另一个来源（放大后必然压到相邻词）。
+            const scale = baseScale;
             const height = fontPx * scale * 0.95;
 
             return {
@@ -942,14 +941,12 @@ const buildWordPlacements = (
             primaryPlanByWordIndex.set(plan.fragment.wordIndex, plan);
         }
     });
-    const heroPlan = heroWordIndex === null ? null : primaryPlanByWordIndex.get(heroWordIndex) ?? null;
-    const heroMetrics = heroPlan
-        ? {
-            centerX: (heroPlan.width * heroPlan.scale) / 2,
-            centerY: -heroPlan.height * 0.46,
-            width: heroPlan.width * heroPlan.scale,
-        }
-        : null;
+    // 曾经的"主角词居中"：把强调词搬到画面正中央并放大到 1.46~1.9 倍。它在词多的句子里
+    // 必定和行内的其它词压在一起（避让公式按"中心距"给，实际半宽都没算进去），
+    // 于是读起来就是"歌词重叠"。这里不再搬位置、不再放大：所有词都待在排版给它的位置，
+    // 强调只体现在颜色和辉光上。排版本身是顺序排的，因此不可能互相压叠。
+    void heroWordIndex;
+    void primaryPlanByWordIndex;
 
     placementPlans.forEach(plan => {
         const { fragment, lineIndex, fragmentIndex, emphasis, width, height, scale, collisionWidth, collisionHeight, padding } = plan;
@@ -963,37 +960,19 @@ const buildWordPlacements = (
         const entryOffsetX = 0;
         const entryOffsetY = 0;
         const step = Math.max(10, Math.round(fontPx * 0.14));
+        // 散射半径必须小：之前普通词能在 2.2 倍行高里乱跑，词一多就互相压在一起。
         const maxRadius = emphasis > 1
-            ? Math.max(20, lineHeight * 0.5)
-            : Math.max(lineHeight * 2.2, collisionWidth * 0.75, 56);
-        let preferredX = emphasis > 1 ? -width / 2 : plan.baseX;
-        let preferredY = emphasis > 1 ? 0 : plan.baseY;
+            ? Math.max(18, lineHeight * 0.42)
+            : Math.max(lineHeight * 0.8, collisionWidth * 0.28, 26);
+        // 所有词都待在排版给它的位置：不再有"主角词搬到中央"这一步。
+        const preferredX = plan.baseX;
+        const preferredY = plan.baseY;
 
-        if (!isInterlude && emphasis <= 1 && heroMetrics) {
-            const wordCenterX = preferredX + width / 2;
-            const wordCenterY = preferredY - height * 0.46;
-            let dx = wordCenterX - heroMetrics.centerX;
-            let dy = wordCenterY - heroMetrics.centerY;
-            const distance = Math.hypot(dx, dy);
-            if (distance < 1) {
-                dx = preferredX >= 0 ? 1 : -1;
-                dy = lineIndex % 2 === 0 ? -0.65 : 0.65;
-            }
-            const minHeroSeparation = heroMetrics.width * 0.34 + width * 0.52 + padding * 2;
-            if (distance < minHeroSeparation) {
-                const normalizedDistance = Math.max(Math.hypot(dx, dy), 1);
-                const ux = dx / normalizedDistance;
-                const uy = dy / normalizedDistance;
-                const push = minHeroSeparation - distance;
-                preferredX += ux * push;
-                preferredY += uy * push * 0.92;
-            }
-        }
-
-        const horizontalMin = (-maxWidth / 2) - 72;
-        const horizontalMax = (maxWidth / 2) + 72;
-        const verticalMin = -Math.max(totalHeight * 0.9, lineHeight * 1.6);
-        const verticalMax = Math.max(totalHeight * 0.9, lineHeight * 1.45);
+        // 活动范围也收紧：词被推到别的行/别的词头上，就会读成"歌词重叠"。
+        const horizontalMin = (-maxWidth / 2) - 28;
+        const horizontalMax = (maxWidth / 2) + 28;
+        const verticalMin = -Math.max(totalHeight * 0.5, lineHeight * 0.8);
+        const verticalMax = Math.max(totalHeight * 0.5, lineHeight * 0.8);
         let chosenX = preferredX;
         let chosenY = preferredY;
         let found = false;
@@ -1002,9 +981,8 @@ const buildWordPlacements = (
             y: preferredY,
             score: Number.POSITIVE_INFINITY,
         };
-        const baseAngle = heroMetrics && emphasis <= 1
-            ? Math.atan2(preferredY, preferredX + width / 2)
-            : 0;
+        // 螺旋搜索从"水平向右"开始，保证同位候选顺序稳定。
+        const baseAngle = 0;
 
         for (let radius = 0; radius <= maxRadius && !found; radius += step) {
             const sampleCount = radius === 0
@@ -1058,8 +1036,10 @@ const buildWordPlacements = (
         }
 
         if (!found) {
-            chosenX = bestFallback.x;
-            chosenY = bestFallback.y;
+            // 找不到空位时回到排版本来给它的位置：宁可贴得紧，也不要飘到别的词身上
+            // （之前这里取的是"重叠面积最小"的候选，往往已经压在别人头上了）。
+            chosenX = preferredX;
+            chosenY = preferredY;
             pushPlacementRect(chosenX, chosenY, collisionWidth, collisionHeight, padding);
         }
 
