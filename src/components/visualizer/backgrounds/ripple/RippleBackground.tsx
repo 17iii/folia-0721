@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { motion, useMotionValue, useMotionValueEvent, type MotionValue } from 'framer-motion';
+import React from 'react';
+import { motion, useMotionValue, useSpring, useTransform, type MotionValue } from 'framer-motion';
 import { DEFAULT_RIPPLE_BACKGROUND_TUNING, type RippleBackgroundTuning, type Theme } from '../../../../types';
 import { colorWithAlpha } from '../../colorMix';
 import { resolveBackgroundTint, tintedBackdrop } from '../themeTint';
@@ -7,23 +7,21 @@ import { resolveBackgroundTint, tintedBackdrop } from '../themeTint';
 // src/components/visualizer/backgrounds/ripple/RippleBackground.tsx
 // 涟漪：以音频能量驱动的同心圆波纹。圆环数量、扩散速度、强度与粗细由参数面板决定。
 //
-// 底色与圆环都取主题色（背景色打底，强调色/辅色画环），换主题时这一层会跟着变。
+// 音频能量必须走 MotionValue，不能进 React state：之前每帧 setState 会让组件重渲染、
+// framer-motion 收到新的 animate 目标后把正在扩散的环**从头重启**——环刚到最大的那一下就闪。
+// 现在能量只作用在最外层容器的 scale 上，环自己的关键帧不随渲染变化。
 const RippleBackground: React.FC<{
     theme: Theme;
     isDaylight: boolean;
     audioPower?: MotionValue<number>;
     frozen?: boolean;
     tuning?: RippleBackgroundTuning;
-}> = ({ theme, isDaylight, audioPower, frozen = false, tuning = DEFAULT_RIPPLE_BACKGROUND_TUNING }) => {
+}> = ({ theme, audioPower, frozen = false, tuning = DEFAULT_RIPPLE_BACKGROUND_TUNING }) => {
     const tint = resolveBackgroundTint(theme);
-    const [boost, setBoost] = useState(1);
     const fallbackPower = useMotionValue(0);
-
-    useMotionValueEvent(audioPower ?? fallbackPower, 'change', (value) => {
-        if (typeof value === 'number') {
-            setBoost(1 + Math.min(0.7, Math.max(0, value)));
-        }
-    });
+    // audioPower 的实时刻度是 0..255（预览时是 0..1），这里只取一个温和的放大倍率。
+    const boostTarget = useTransform(audioPower ?? fallbackPower, [0, 1, 255], [1, 1, 1.35]);
+    const boost = useSpring(boostTarget, { stiffness: 120, damping: 26, mass: 0.4 });
 
     const ringCount = Math.max(1, Math.min(10, Math.round(tuning.ringCount)));
     const rings = Array.from({ length: ringCount }, (_, index) => index);
@@ -32,34 +30,44 @@ const RippleBackground: React.FC<{
     const ringWidth = Math.max(0.5, tuning.ringWidthPx);
     // 亮底上圆环要更实一点才看得见。
     const ringAlpha = tint.isLightBase ? 0.75 : 0.55;
+    const startOpacity = 0.55 * tuning.strength;
 
     return (
         <div
-            className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden"
+            className="absolute inset-0 z-0 overflow-hidden"
             style={{ background: tintedBackdrop(tint) }}
         >
-            {rings.map((index) => (
-                <motion.div
-                    key={index}
-                    className="absolute rounded-full"
-                    style={{
-                        border: `${ringWidth.toFixed(1)}px solid ${colorWithAlpha(
-                            index % 2 === 0 ? tint.accent : tint.secondary,
-                            ringAlpha,
-                        )}`,
-                        width: '42vmax',
-                        height: '42vmax',
-                    }}
-                    animate={frozen ? undefined : { scale: [0.18, reach * boost], opacity: [0.55 * tuning.strength, 0] }}
-                    transition={frozen ? undefined : { duration, repeat: Infinity, delay: (index * duration) / ringCount, ease: 'easeOut' }}
-                />
-            ))}
+            <motion.div
+                className="absolute inset-0 flex items-center justify-center"
+                style={{ scale: boost }}
+            >
+                {rings.map((index) => (
+                    <motion.div
+                        key={index}
+                        className="absolute rounded-full"
+                        style={{
+                            border: `${ringWidth.toFixed(1)}px solid ${colorWithAlpha(
+                                index % 2 === 0 ? tint.accent : tint.secondary,
+                                ringAlpha,
+                            )}`,
+                            width: '42vmax',
+                            height: '42vmax',
+                        }}
+                        initial={{ scale: 0.18, opacity: startOpacity }}
+                        animate={frozen ? { scale: 0.18, opacity: startOpacity * 0.5 } : { scale: reach, opacity: 0 }}
+                        transition={frozen
+                            ? { duration: 0.3 }
+                            : { duration, repeat: Infinity, delay: (index * duration) / ringCount, ease: 'easeOut' }}
+                    />
+                ))}
+            </motion.div>
             {/* 中心一团柔光，颜色取强调色，静止时也有主题感。 */}
             <div
-                className="absolute rounded-full"
+                className="absolute left-1/2 top-1/2 rounded-full"
                 style={{
                     width: '22vmax',
                     height: '22vmax',
+                    transform: 'translate(-50%, -50%)',
                     background: `radial-gradient(circle, ${colorWithAlpha(tint.accent, tint.isLightBase ? 0.16 : 0.3)}, transparent 70%)`,
                     filter: 'blur(24px)',
                 }}
@@ -67,7 +75,7 @@ const RippleBackground: React.FC<{
             <div
                 className="absolute inset-0"
                 style={{
-                    background: isDaylight
+                    background: tint.isLightBase
                         ? 'linear-gradient(180deg, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 35%, rgba(0,0,0,0.04) 100%)'
                         : 'linear-gradient(180deg, rgba(0,0,0,0) 50%, rgba(0,0,0,0.26) 100%)',
                 }}
