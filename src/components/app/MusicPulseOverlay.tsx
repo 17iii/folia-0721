@@ -46,13 +46,14 @@ const MusicPulseOverlay: React.FC<MusicPulseOverlayProps> = ({
 }) => {
     // audioPower 的实时刻度是 0..255（见 usePlaybackVisualizerBridge），预览时是 0..1。
     const smooth = useSpring(audioPower, { stiffness: 120, damping: 30, mass: 0.45 });
+    // 上限压到 0.10：这一层只是"呼吸"，不该把播放页洗成一块颜色。
     const opacity = useTransform(smooth, [0, 40, 160, 255], [
+        0.02 * strength,
         0.035 * strength,
         0.06 * strength,
-        0.11 * strength,
-        0.16 * strength,
+        0.095 * strength,
     ]);
-    const scale = useTransform(smooth, [0, 255], [1, 1 + 0.05 * strength]);
+    const scale = useTransform(smooth, [0, 255], [1, 1 + 0.035 * strength]);
 
     if (!enabled) {
         return null;
@@ -63,10 +64,11 @@ const MusicPulseOverlay: React.FC<MusicPulseOverlayProps> = ({
             aria-hidden
             className="pointer-events-none absolute inset-0 z-[2]"
             style={{
-                background: `radial-gradient(115% 80% at 50% 78%, ${withAlpha(theme.accentColor, 0.9)} 0%, ${withAlpha(theme.secondaryColor, 0.32)} 46%, rgba(0,0,0,0) 74%)`,
+                background: `radial-gradient(105% 62% at 50% 86%, ${withAlpha(theme.secondaryColor, 0.55)} 0%, ${withAlpha(theme.accentColor, 0.28)} 38%, rgba(0,0,0,0) 70%)`,
                 opacity,
                 scale,
-                mixBlendMode: isDaylight ? 'multiply' : 'screen',
+                // 亮底上 screen 会直接洗白，改用 soft-light 只推移明暗。
+                mixBlendMode: isDaylight ? 'soft-light' : 'screen',
                 willChange: 'opacity, transform',
             }}
         />
