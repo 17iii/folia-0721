@@ -53,11 +53,23 @@ const RippleBackground: React.FC<{
                             width: '42vmax',
                             height: '42vmax',
                         }}
-                        initial={{ scale: 0.18, opacity: startOpacity }}
-                        animate={frozen ? { scale: 0.18, opacity: startOpacity * 0.5 } : { scale: reach, opacity: 0 }}
+                        initial={{ scale: 0.18, opacity: 0 }}
+                        animate={
+                            frozen
+                                ? { scale: 0.18, opacity: startOpacity * 0.4 }
+                                : { scale: [0.18, reach], opacity: [0, startOpacity, 0] }
+                        }
                         transition={frozen
                             ? { duration: 0.3 }
-                            : { duration, repeat: Infinity, delay: (index * duration) / ringCount, ease: 'easeOut' }}
+                            : {
+                                  duration,
+                                  repeat: Infinity,
+                                  delay: (index * duration) / ringCount,
+                                  scale: { ease: 'easeOut' },
+                                  // 环在扩散途中（约 80% 处）就淡尽，到最大时早已透明，
+                                  // 循环从透明小圆起跳 —— 既优雅消散，又彻底消除“到最大闪一下”。
+                                  opacity: { ease: 'easeInOut', times: [0, 0.2, 0.8] },
+                              }}
                     />
                 ))}
             </motion.div>

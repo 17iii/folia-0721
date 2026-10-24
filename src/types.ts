@@ -1115,8 +1115,8 @@ export interface RippleBackgroundTuning {
 }
 
 export const DEFAULT_RIPPLE_BACKGROUND_TUNING: RippleBackgroundTuning = {
-  ringCount: 4,
-  speed: 1,
+  ringCount: 3,
+  speed: 0.8,
   strength: 1,
   ringWidthPx: 2,
 };
